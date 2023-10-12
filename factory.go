@@ -18,11 +18,6 @@ func NewFactory() connector.Factory {
 	)
 }
 
-// createDefaultConfig creates the default configuration.
-func createDefaultConfig() component.Config {
-	return &struct{}{}
-}
-
 // createTracesToLogs creates a traces to logs connector based on provided config.
 func createTracesToLogs(_ context.Context, params connector.CreateSettings,
 	cfg component.Config, nextConsumer consumer.Logs) (connector.Traces, error) {
