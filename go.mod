@@ -3,6 +3,8 @@ module github.com/onfla11/bconnector
 go 1.20
 
 require (
+	github.com/google/uuid v1.3.0
+	github.com/satori/go.uuid v1.2.0
 	go.opentelemetry.io/collector/component v0.87.0
 	go.opentelemetry.io/collector/connector v0.87.0
 	go.opentelemetry.io/collector/consumer v0.87.0

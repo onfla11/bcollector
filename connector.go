@@ -5,7 +5,6 @@ package bconnector // import "github.com/open-telemetry/opentelemetry-collector-
 
 import (
 	"context"
-	"fmt"
 
 	"go.uber.org/zap"
 
@@ -25,10 +24,10 @@ type bconnectorImp struct {
 // function to create a new connector
 func newConnector(logger *zap.Logger, config component.Config, generator *eventGenerator) *bconnectorImp {
 	logger.Info("Building bconnector connector")
-	cfg := config.(*component.Config)
+	oCfg := config.(*Config)
 
 	return &bconnectorImp{
-		config:   *cfg,
+		config:   oCfg,
 		logger:   logger,
 		eventGen: generator,
 	}
@@ -40,20 +39,20 @@ func (c *bconnectorImp) Capabilities() consumer.Capabilities {
 }
 
 func (c *bconnectorImp) ConsumeLogs(_ context.Context, log plog.Logs) error {
-	_, err := fmt.Println("consumer logs: ", log)
-	return err
+	c.logger.Info("consumer logs: ", zap.Any("log", log))
+	return nil
 }
 
 func (c *bconnectorImp) ConsumeTraces(ctx context.Context, trace ptrace.Traces) error {
-	event, err := c.eventGen.generate(trace)
+	event, err := c.eventGen.generateLog(c.logger, trace)
 	if err != nil {
 		return err
 	}
 	if event != nil {
-		fmt.Println("Event Generated: {}", event)
+		c.logger.Info("ConsumeTraces: Event Generated: ", zap.Any("event", event))
 	}
-	log := plog.NewLogs()
-	err = c.logConsumer.ConsumeLogs(ctx, log)
+
+	err = c.logConsumer.ConsumeLogs(ctx, *event)
 	if err != nil {
 		return err
 	}
